@@ -29,12 +29,27 @@ def register():
         if pw != pw_check:
             print("비밀번호가 일치하지 않습니다. 다시 입력하세요.")
         else:
-            members.append({"id": id, "pw": pw})
+            members.append({"id": id, "pw": pw, "money": 0})
             print("회원가입이 완료되었습니다.")
     else:
         register()
     
+   
+def login():
+    pass
 
+
+def charge():
+    pass
+
+
+def room():
+    pass
+          
+          
+def pay():
+    pass
+          
 def admin():
     global admin_pw
     pw = input("관리자 페이지입니다. 비밀번호를 입력하세요.\n")
@@ -53,9 +68,9 @@ def admin():
                     admin()
         else:
             print(f"매출 누적액입니다. \t{sum(income)} 원")
-            print(f"1회 최고 매출액입니다.\t {max(income)} 원")
-            
-            
+            print(f"1회 최고 매출액입니다.\t {max(income)} 원")  
+
+
 # 실행부
 
 

@@ -4,6 +4,18 @@ rooms = []
 income = []
 
 
+def home():
+    print("MS 코인 노래방에 오신 것을 환영합니다.")
+    print("관리자 모드 (99)")
+    home_action = input("회원 결제 (1) / 비회원 결제 (2) / 회원가입 (3)\n")
+    if home_action == "1":
+        login()
+    elif home_action == "2":
+        pay()
+    else:
+        register()
+    
+
 def register():
     global members
     id_check = True
@@ -41,9 +53,9 @@ def admin():
                     admin()
         else:
             print(f"매출 누적액입니다. \t{sum(income)} 원")
-            print(f"1회 최고 매출액입니다.\t {max(income)}")
+            print(f"1회 최고 매출액입니다.\t {max(income)} 원")
+            
+            
+# 실행부
 
-print("MS 코인 노래방에 오신 것을 환영합니다.")
 
-print("관리자 모드 (99)")
-is_member = int(input("회원 (1) / 비회원 (2) / 회원가입 (3)\n"))

@@ -1,20 +1,15 @@
 admin_pw = "0000"
-members = []
-rooms = [
-    {
-        "room_id": 1,
-        "비밀번호": "pass123",
-        "이름": "홍길동"
-    },
-]
-income = []
+members = [{"id": "admin", "pw": "admin", "money": 0}]
+rooms = []
+income = [0]
 room_to_pay = 0
 
-for i in range(20):
+for i in range(10):
     rooms.append({
         "room_id": i+1,
         "using": 0
     })
+
 
 def home():
     print("MS 코인 노래방에 오신 것을 환영합니다.")
@@ -28,14 +23,16 @@ def home():
             pay()
         else:
             register()
-    else:
+    elif home_action == "99":
         admin()
+    else:
+        home()
     
 
 def register():
     global members
     id_check = True
-    id = input("등록할 ID를 입력하세요.")
+    id = input("등록할 ID를 입력하세요.\n")
     for member in members:
         if member["id"] == id:
             id_check = False
@@ -47,6 +44,8 @@ def register():
         else:
             members.append({"id": id, "pw": pw, "money": 0})
             print("회원가입이 완료되었습니다.")
+            # print(members)
+            home()
     else:
         register()
     
@@ -54,16 +53,23 @@ def register():
 def login():
     global members
     id = input("등록된 ID를 입력하세요.\n")
-    pw = input("비밀번호를 입력하세요.\n")
+    now_member = False
     for member in members:
-        if member["id"] == id and member["pw"] == pw:
-            return id
+        if member["id"] == id:
+            now_member = member
+            continue
+    if now_member:
+        pw = input("비밀번호를 입력하세요.\n")
+        if member["pw"] == pw:
+            pay(id)
+    else:
+        fail_action = input("일치하는 사용자 정보가 없습니다.\n다시 시도 (1) / 비회원 결제 (2) / 회원 가입 (3)\n")
+        if fail_action == "1":
+            login()
+        elif fail_action == "2":
+            pay()
         else:
-            fail_action = input("사용자 정보가 일치하지 않습니다.\n다시 시도 (1) / 비회원 결제 (2)\n")
-            if fail_action == "1":
-                login()
-            else:
-                charge(id)
+            register()
 
 
 def room():
@@ -76,56 +82,70 @@ def room():
     room_want = int(input(f"현재 사용 가능한 방은 {room_possible}입니다. 몇 번 방을 사용하시겠습니까? (숫자만 입력)\n"))
     if room_want in room_possible:
         room_to_pay = room_want
-        pay()
     else:
         print("선택할 수 없는 방입니다. 다시 선택해 주세요.")
         room()
     
             
-def charge(id):
-    global members
-    for member in members:
-        if member["id"] == id:
-            money = member["money"]
-    how_much = int(input(f"현재 잔액은 {money} 원입니다. 얼마를 더 충전하시겠습니까? (숫자만 입력)\n"))
-    for member in members:
-        if member["id"] == id:
-            member["money"] += how_much
-    pay(id)
+# def charge(id):
+#     global members
+#     for member in members:
+#         if member["id"] == id:
+#             money = member["money"]
+#     how_much = int(input(f"현재 잔액은 {money} 원입니다. 얼마를 더 충전하시겠습니까? (숫자만 입력)\n"))
+#     for member in members:
+#         if member["id"] == id:
+#             member["money"] += how_much
+#     pay(id)
           
           
 def pay(id="비회원"):
     global rooms
     global room_to_pay
     global members
-    insert = int(input("1000원에 3곡입니다. 얼마를 결제하시겠습니까? (1000으로 나눠 떨어지는 숫자만 입력)\n"))
-    if insert % 1000 != 0 or insert == 0:
+    global income
+    insert = int(input("1000원에 3곡입니다. 얼마를 결제하시겠습니까? (1000으로 나눠 떨어지는 숫자만 입력, 결제 취소 (0))\n"))
+    if insert % 1000 != 0:
         print("잘못된 금액입니다. 다시 입력하세요.")
         pay(id)
-    if id != "비회원":
+    elif insert == 0:
+        home()
+        
+    if id == "비회원":
+        print(f"\n결제가 완료되었습니다. {room_to_pay}번 방을 사용하세요.")
+        income.append(insert)
+        for room in rooms:
+            if room["room_id"] == room_to_pay:
+                room["using"] = 1
+    else:
         no_money = True
-        while no_money:
+        retry = "1"
+        while no_money and retry == "1":
             for member in members:
                 if member["id"] == id:
                     now_money = member["money"]
             if now_money < insert:
-                how_much = int(input(f"현재 잔액은 {now_money} 원입니다. 얼마를 더 충전하시겠습니까? (숫자만 입력)\n"))
+                how_much = int(input(f"현재 잔액은 {now_money}원입니다. 얼마를 더 충전하시겠습니까? (숫자만 입력)\n"))
                 for member in members:
                     if member["id"] == id:
                         member["money"] += how_much
                 now_money += how_much
+                retry = input("결제를 계속하시겠습니까? 예 (1) / 아니오 (2)\n")
             else:
-                print(f"현재 잔액은 {now_money} 원입니다. {insert} 원이 사용됩니다.")
+                print(f"현재 잔액은 {now_money}원입니다. {insert}원이 사용됩니다.")
                 for member in members:
                     if member["id"] == id:
                         member["money"] -= insert
                 no_money = False
-                
-    print(f"결제가 완료되었습니다. {room_to_pay}번 방을 사용하세요.")
-    for room in rooms:
-        if room["room_id"] == room_to_pay:
-            room["using"] == 1
-        
+                print(f"\n결제가 완료되었습니다. {room_to_pay}번 방을 사용하세요.")
+                income.append(insert)
+                for room in rooms:
+                    if room["room_id"] == room_to_pay:
+                        room["using"] = 1
+    # print(rooms)
+    print("\n\n")
+    home()
+    
         
 def admin():
     global admin_pw
@@ -138,16 +158,19 @@ def admin():
             checking_new_pw = True
             while checking_new_pw:
                 new_pw = input("변경할 비밀번호를 입력하세요.\n")
-                new_pw_check = input("변경할 비밀번호를 입력하세요.\n")
+                new_pw_check = input("변경할 비밀번호를 한 번 더 입력하세요.\n")
                 if new_pw == new_pw_check:
                     checking_new_pw = False
                     print("비밀번호가 변경되었습니다.")
-                    admin()
+                    admin_pw = new_pw
         else:
-            print(f"매출 누적액입니다. \t{sum(income)} 원")
-            print(f"1회 최고 매출액입니다.\t {max(income)} 원")  
+            print(f"매출 누적액입니다. --------- {sum(income)} 원")
+            print(f"1회 최고 매출액입니다. ----- {max(income)} 원") 
+    home()
 
 
 # 실행부
 
+home()
 
+# 없는 아이디일 때 돌아갈 방법

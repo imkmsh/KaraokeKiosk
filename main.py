@@ -36,8 +36,19 @@ def register():
     
    
 def login():
-    pass
-
+    global members
+    id_exist = False
+    id = input("등록된 ID를 입력하세요.\n")
+    pw = input("비밀번호를 입력하세요.\n")
+    for member in members:
+        if member["id"] == id and member["pw"] == pw:
+            return True
+        else:
+            fail_action = input("사용자 정보가 일치하지 않습니다.\n다시 시도 (1) /  비회원 결제 (2)\n")
+            if fail_action == "1":
+                login()
+            else:
+                room()
 
 def charge():
     pass

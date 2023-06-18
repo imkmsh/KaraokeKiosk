@@ -21,8 +21,10 @@ def home():
             login()
         elif pay_action == "2":
             pay()
-        else:
+        elif pay_action == "3":
             register()
+        else:
+            home()
     elif home_action == "99":
         admin()
     else:
@@ -47,7 +49,12 @@ def register():
             # print(members)
             home()
     else:
-        register()
+        retry = input("이미 등록된 아이디입니다. 다른 아이디를 사용하세요. 다시 시도 (1) / 비회원 결제 (2)\n")
+        if retry == "2":
+            pay()
+        else:
+            register()
+            
     
    
 def login():
@@ -60,8 +67,16 @@ def login():
             continue
     if now_member:
         pw = input("비밀번호를 입력하세요.\n")
-        if member["pw"] == pw:
+        if now_member["pw"] == pw:
             pay(id)
+        else:
+            fail_action = input("일치하는 사용자 정보가 없습니다.\n다시 시도 (1) / 비회원 결제 (2) / 회원 가입 (3)\n")
+            if fail_action == "1":
+                login()
+            elif fail_action == "2":
+                pay()
+            else:
+                register()
     else:
         fail_action = input("일치하는 사용자 정보가 없습니다.\n다시 시도 (1) / 비회원 결제 (2) / 회원 가입 (3)\n")
         if fail_action == "1":
@@ -85,18 +100,6 @@ def room():
     else:
         print("선택할 수 없는 방입니다. 다시 선택해 주세요.")
         room()
-    
-            
-# def charge(id):
-#     global members
-#     for member in members:
-#         if member["id"] == id:
-#             money = member["money"]
-#     how_much = int(input(f"현재 잔액은 {money} 원입니다. 얼마를 더 충전하시겠습니까? (숫자만 입력)\n"))
-#     for member in members:
-#         if member["id"] == id:
-#             member["money"] += how_much
-#     pay(id)
           
           
 def pay(id="비회원"):
@@ -143,7 +146,7 @@ def pay(id="비회원"):
                     if room["room_id"] == room_to_pay:
                         room["using"] = 1
     # print(rooms)
-    print("\n\n")
+    print("♪₊(˘ᵋॢ ˘ॢ⌯)*·♫\n")
     home()
     
         
@@ -173,4 +176,10 @@ def admin():
 
 home()
 
-# 없는 아이디일 때 돌아갈 방법
+# admin에서 비번 바꿔주고
+# 없는 방 한 번 골라주고,
+# 비회원 결제, 거기서 금액 한 번 잘 못 눌러주고, 2000원 결제
+# 회원 결제 눌러서 회원 가입 들어가고
+# 회원이 10000원 충전해서 5000원 결제
+# 똑같은 회원이 2000원 결제할때 잔액 유지되는거 보여주기
+# admin에서 매출액 확인
